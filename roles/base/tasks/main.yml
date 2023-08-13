@@ -1,0 +1,22 @@
+---
+- name: Set hostname
+  hostname:
+    name: "{{ hostname | default(inventory_hostname) }}"
+
+- name: Install base packages
+  yum:
+    name:
+      - git
+      - vim
+      - python3
+      - python3-pip
+      - elrepo-release
+      - epel-release
+    state: present
+
+- name: Enable watchdog timer
+  lineinfile:
+    path: /etc/systemd/system.conf
+    regex: "^#?RuntimeWatchdogSec"
+    line: "RuntimeWatchdogSec=30"
+  notify: Reload systemctl daemon

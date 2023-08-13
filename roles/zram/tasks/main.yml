@@ -1,0 +1,10 @@
+---
+- name: Configure zram-generator
+  template:
+    src: zram-generator.conf
+    dest: /etc/systemd/zram-generator.conf
+
+- name: Install zram-generator
+  dnf:
+    name: zram-generator
+    state: present

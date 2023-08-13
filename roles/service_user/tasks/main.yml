@@ -1,0 +1,34 @@
+---
+- fail:
+    msg: "The variable `service_user` must be defined."
+  when: not service_user
+
+- name: Add service user group
+  group:
+    name: "{{ service_user }}"
+    state: present
+
+- name: Add service user
+  user:
+    name: "{{ service_user }}"
+    group: "{{ service_user }}"
+    groups: "{{ service_user_groups }}"
+    comment: Service User
+    state: present
+
+- name: Set service user authorized_keys
+  ansible.posix.authorized_key:
+    user: "{{ service_user }}"
+    key: "{{ service_user_authorized_keys }}"
+    exclusive: true
+    state: present
+
+- name: Set service user password
+  user:
+    name: "{{ service_user }}"
+    password: >-
+      {{
+        service_user_password
+          | password_hash(hashtype="sha256", salt=service_user_salt)
+      }}
+  when: service_user_password

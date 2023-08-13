@@ -1,0 +1,79 @@
+---
+- name: Add Docker group
+  group:
+    name: "{{ docker_group }}"
+    system: true
+    state: present
+
+- name: Add Docker user
+  user:
+    name: "{{ docker_user }}"
+    password: "!"
+    group: "{{ docker_group }}"
+    system: true
+    state: present
+  register: docker_user_result
+
+- name: Add subuid/subgid
+  command:
+    argv:
+      - usermod
+      - --add-subuids
+      - "{{ docker_subuids }}"
+      - --add-subgids
+      - "{{ docker_subgids }}"
+      - "{{ docker_user }}"
+  when: docker_user_result.changed
+
+- name: Create Docker config dir
+  file:
+    path: /etc/docker
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Configure Docker
+  copy:
+    dest: /etc/docker/daemon.json
+    content: "{{ docker_config | to_nice_json }}"
+    owner: root
+    group: root
+    mode: "0600"
+  vars:
+    docker_config:
+      ipv6: "{{ docker_ipv6 }}"
+      ip6tables: "{{ docker_ipv6 }}"
+      experimental: true
+      fixed-cidr-v6: "{{ docker_default_ipv6 }}"
+      userns-remap: "{{ docker_user }}:{{ docker_group }}"
+  notify: Restart Docker
+
+- name: Add Docker repository
+  yum_repository:
+    name: docker-ce-stable
+    description: Docker CE Stable - $basearch
+    baseurl: https://download.docker.com/linux/centos/$releasever/$basearch/stable
+    gpgcheck: true
+    gpgkey: https://download.docker.com/linux/centos/gpg
+    enabled: true
+    state: present
+
+- name: Install Docker packages
+  dnf:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    state: present
+
+- name: Install Docker support packages
+  pip:
+    name: docker
+    state: present
+
+- name: Start Docker daemon
+  service:
+    name: docker
+    state: started
+    enabled: true

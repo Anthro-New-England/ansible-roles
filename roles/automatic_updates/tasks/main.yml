@@ -1,0 +1,17 @@
+---
+- name: Install dnf-automatic
+  dnf:
+    name:
+      - dnf-automatic
+    state: present
+
+- name: Configure dnf-automatic
+  template:
+    src: dnf-automatic.conf
+    dest: /etc/dnf/automatic.conf
+
+- name: Enable dnf-automatic
+  service:
+    name: dnf-automatic-install.timer
+    state: started
+    enabled: true

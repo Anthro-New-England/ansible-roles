@@ -1,0 +1,7 @@
+---
+docker_ipv6: true
+docker_default_ipv6: "fda8:0054:2088::/48"
+docker_user: dockremap
+docker_group: dockremap
+docker_subuids: "200000-265536"
+docker_subgids: "200000-265536"
