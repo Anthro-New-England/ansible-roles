@@ -32,7 +32,7 @@
   blockinfile:
     path: /etc/exports
     block: |
-      {% for item in nfs_exports if item.opts %}
+      {% for item in nfs_exports or [] if item.opts %}
       {{ item.path }} {{ item.opts }}
       {% endfor %}
   notify:
