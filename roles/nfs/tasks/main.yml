@@ -1,0 +1,39 @@
+---
+- name: Install NFS server
+  dnf:
+    name: nfs-utils
+    state: present
+
+- name: Create NFS directory
+  file:
+    path: "{{ nfs_directory }}"
+    owner: root
+    group: root
+    mode: "0644"
+    state: directory
+
+- name: Enable nfs-server
+  service:
+    name: nfs-server
+    state: started
+    enabled: true
+
+- name: Create NFS export directories
+  file:
+    path: "{{ item.path }}"
+    owner: "{{ item.owner | default(omit) }}"
+    group: "{{ item.group | default(omit) }}"
+    mode: "{{ item.mode | default(omit)}}"
+    state: directory
+  loop: "{{ nfs_exports or [] }}"
+  when: nfs_exports is not none
+
+- name: Configure NFS exports
+  blockinfile:
+    path: /etc/exports
+    block: |
+      {% for item in nfs_exports if item.opts %}
+      {{ item.path }} {{ item.opts }}
+      {% endfor %}
+  notify:
+    - Restart nfs

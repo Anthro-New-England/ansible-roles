@@ -1,0 +1,28 @@
+---
+- name: Install firewalld
+  dnf:
+    name: firewalld
+    state: present
+
+- name: Enable firewalld
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Add public interface to zone
+  ansible.posix.firewalld:
+    zone: "{{ firewall_zone }}"
+    interface: "{{ firewall_interface }}"
+    state: enabled
+    permanent: yes
+    immediate: yes
+
+- name: Add internal interface to zone
+  ansible.posix.firewalld:
+    zone: "{{ firewall_private_zone }}"
+    interface: "{{ firewall_private_interface }}"
+    state: enabled
+    permanent: yes
+    immediate: yes
+  when: firewall_private_interface

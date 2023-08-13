@@ -1,2 +1,9 @@
 ---
 hostname: "{{ inventory_hostname }}"
+base_packages:
+  - git
+  - vim
+  - python3
+  - python3-pip
+  - elrepo-release
+  - epel-release

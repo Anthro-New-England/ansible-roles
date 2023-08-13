@@ -1,0 +1,8 @@
+---
+nfs_directory: /var/nfs
+nfs_exports:
+  # - path: /var/nfs/example
+  #   owner: root
+  #   group: root
+  #   mode: "0755"
+  #   opts: "10.0.0.0/8(rw)"

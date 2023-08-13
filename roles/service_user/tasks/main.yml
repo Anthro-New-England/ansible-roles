@@ -31,4 +31,13 @@
         service_user_password
           | password_hash(hashtype="sha256", salt=service_user_salt)
       }}
-  when: service_user_password
+  when: service_user_password and service_user_salt
+
+- name: Configure sudoers
+  copy:
+    content: |
+      {{ service_user }}    ALL=(ALL)    NOPASSWD: ALL
+    dest: /etc/sudoers.d/service-user
+    owner: root
+    group: root
+    mode: "0640"

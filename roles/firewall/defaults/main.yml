@@ -1,0 +1,5 @@
+---
+firewall_zone: public
+firewall_interface: "{{ ansible_default_ipv4.interface }}"
+firewall_private_zone: internal
+firewall_private_interface:

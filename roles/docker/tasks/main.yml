@@ -45,7 +45,7 @@
       ipv6: "{{ docker_ipv6 }}"
       ip6tables: "{{ docker_ipv6 }}"
       experimental: true
-      fixed-cidr-v6: "{{ docker_default_ipv6 }}"
+      fixed-cidr-v6: "{{ docker_default_ipv6 if docker_ipv6 else none }}"
       userns-remap: "{{ docker_user }}:{{ docker_group }}"
   notify: Restart Docker
 
