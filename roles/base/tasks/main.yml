@@ -8,11 +8,22 @@
     label: "{{ item.label }}"
   loop:
     - label: "IPv4 {{ hostname }}"
-      regexp: "^127\\.0\\.0\\.1.*# ansible hostname$"
+      regexp: "^127\\.0\\.0\\.1 .*# ansible hostname$"
       line: "127.0.0.1    {{ hostname }} # ansible hostname"
     - label: "IPv6 {{ hostname }}"
-      regexp: "^::1.*# ansible hostname$"
+      regexp: "^::1 .*# ansible hostname$"
       line: "::1    {{ hostname }} # ansible hostname"
+
+- name: Add hostnames to hosts file
+  blockinfile:
+    path: /etc/hosts
+    block: |
+      127.0.0.1    {{ hostname }}
+      ::1    {{ hostname }}
+      {% for addr, host in additional_hosts.items() %}
+      {{ addr }}    {{ host }}
+      {% endfor %}
+    marker: "# {mark} ansible managed hosts"
 
 - name: Set hostname
   hostname:

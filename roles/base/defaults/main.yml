@@ -1,5 +1,6 @@
 ---
 hostname: "{{ inventory_hostname }}"
+additional_hosts: {}
 base_packages:
   - git
   - vim
